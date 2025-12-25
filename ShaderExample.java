@@ -14,10 +14,42 @@ public class ShaderExample {
     static void main() {
         int[] pixels = new int[WIDTH * HEIGHT];
 
-        for (int i = 0; i < 60; i++) {
-            pixels = shader(pixels, WIDTH, HEIGHT, i);
-            generateImage("image_%02d.ppm".formatted(i), WIDTH, HEIGHT, pixels);
+        int frames = 10;
+        long totalTime = 0;
+        long minTime = Long.MAX_VALUE;
+        long maxTime = Long.MIN_VALUE;
+
+        System.out.println("\nBenchmarking " + frames + " frames:");
+
+        for (int i = 0; i < frames; i++) {
+            System.gc(); // Clean memory before each frame
+
+            long startTime = System.nanoTime();
+            shader(pixels, WIDTH, HEIGHT, i);
+            long endTime = System.nanoTime();
+
+            long frameTime = endTime - startTime;
+            totalTime += frameTime;
+            minTime = Math.min(minTime, frameTime);
+            maxTime = Math.max(maxTime, frameTime);
+
+            double ms = frameTime / 1_000_000.0;
+            System.out.printf("Frame %2d: %6.2f ms\n", i, ms);
         }
+
+        double avgTimeMs = (totalTime / (double)frames) / 1_000_000.0;
+        double minTimeMs = minTime / 1_000_000.0;
+        double maxTimeMs = maxTime / 1_000_000.0;
+        double fps = 1000.0 / avgTimeMs;
+
+        System.out.println("\n=== Results ===");
+        System.out.printf("Average: %8.2f ms\n", avgTimeMs);
+        System.out.printf("Min:     %8.2f ms\n", minTimeMs);
+        System.out.printf("Max:     %8.2f ms\n", maxTimeMs);
+        System.out.printf("FPS:     %8.2f\n", fps);
+        System.out.printf("Total:   %8.2f ms for %d frames\n", totalTime / 1_000_000.0, frames);
+
+        generateImage("image.ppm", WIDTH, HEIGHT, pixels);
 
     }
 

@@ -15,6 +15,11 @@ OpenJDK 64-Bit Server VM (build 25.0.1, mixed mode, sharing)
 java ShaderExample.java
 ```
 
+# Run VectorAPI attempt
+```console
+java --add-modules jdk.incubator.vector --enable-preview ShaderOnVectorApi.java
+```
+
 # Convert to video:
 
 ```console
